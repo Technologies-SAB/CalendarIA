@@ -142,3 +142,35 @@ def listar_eventos_apple():
     except Exception as e:
         logging.error(f"Erro ao listar eventos do iCloud: {e}")
         return []
+    
+def apagar_evento_apple(titulo):
+
+    client = None
+    for server_url in ICLOUD_SERVERS:
+        try:
+            client = DAVClient(url=server_url, username=settings.ICLOUD_USERNAME, password=settings.ICLOUD_PASSWORD)
+            break
+        except Exception: continue
+    if not client: return {"status": "error", "message": "Falha na conexão com o iCloud."}
+
+    try:
+        principal = client.principal()
+        calendars = principal.calendars()
+        if not calendars: return {"status": "not_found", "message": "Nenhum calendário encontrado."}
+        
+        calendar = calendars[0]
+        start_date = datetime.datetime.now()
+        end_date = start_date + datetime.timedelta(days=365)
+        
+        events_fetched = calendar.date_search(start=start_date, end=end_date, expand=True)
+
+        for event in events_fetched:
+            if event.vobject_instance.vevent.summary.value.lower() == titulo.lower():
+                event.delete()
+                logging.info(f"Evento '{titulo}' apagado do iCloud.")
+                return {"status": "success", "message": f"Evento '{titulo}' apagado do iCloud."}
+        
+        return {"status": "not_found", "message": f"Nenhum evento futuro com o título '{titulo}' encontrado no iCloud."}
+    except Exception as e:
+        logging.error(f"Erro ao apagar evento do iCloud: {e}")
+        return {"status": "error", "message": str(e)}
