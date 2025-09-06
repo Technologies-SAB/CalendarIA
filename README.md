@@ -14,8 +14,10 @@ Estruturado Projeto pensada até o momento:
 │
 ├── calendar-service/         # Serviço Python (Google + Apple Calendar)
 │   ├── main.py               # FastAPI/Flask para expor rotas REST
-│   ├── google_calendar.py    # Integração com Google Calendar                        ██████████ 100%
-│   ├── apple_calendar.py     # Integração com Apple Calendar (CalDAV/pyicloud)
+|   ├── google/
+│       ├── google_calendar.py    # Integração com Google Calendar                    ██████████ 100%
+|   ├── apple/
+│       ├── apple_calendar.py     # Integração com Apple Calendar (CalDAV/pyicloud)
 │   ├── requirements.txt                                                              ██████████ 100%
 |   ├── Dockerfile            # Arquivo para buildar o service em Python              ██████████ 100%
 │   └── .env                                                                          ██████████ 100%

@@ -76,7 +76,7 @@ def agendar_google(data_str: str, hora_str: str, titulo: str, description: str):
         logging.error(f"Erro ao criar evento: {e}")
         return {"status": "error", "message": str(e)}
     
-if __name__ == "__main__":
-    logging.info("Iniciando o processo de autenticação para gerar o token.json...")
-    get_calendar_service()
-    logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")
+# if __name__ == "__main__":
+#     logging.info("Iniciando o processo de autenticação para gerar o token.json...")
+#     get_calendar_service()
+#     logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")
