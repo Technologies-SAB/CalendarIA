@@ -1,8 +1,9 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
-from google.google_calendar import agendar_google
-from apple.apple_calendar import agendar_apple
+from datetime import datetime
+from google.google_calendar import agendar_google, listar_eventos_google
+from apple.apple_calendar import agendar_apple, listar_eventos_apple
 
 app = FastAPI(
     title="API CalendarIA",
@@ -34,3 +35,22 @@ async def agendar_evento(evento: Evento):
         "google": resultado_google,
         "apple": resultado_apple
     }
+
+@app.get("/proximos")
+async def listar_proximos_eventos():
+    eventos_google = listar_eventos_google()
+    eventos_apple = listar_eventos_apple()
+    
+    todos_eventos = eventos_google + eventos_apple
+
+    eventos_unicos = []
+    vistos = set()
+    for evento in todos_eventos:
+        chave = (evento['inicio'], evento['titulo'])
+        if chave not in vistos:
+            eventos_unicos.append(evento)
+            vistos.add(chave)
+
+    eventos_unicos.sort(key=lambda x: datetime.fromisoformat(x['inicio'].replace("Z", "+00:00")))
+    
+    return eventos_unicos
