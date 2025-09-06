@@ -45,7 +45,7 @@ async function handleMessage(msg) {
 
     if (text.startsWith('!apagar ')) {
         try {
-            const tituloParaApagar = texto.substring(8).trim();
+            const tituloParaApagar = text.substring(8).trim();
             if (!tituloParaApagar) {
                 return msg.reply('❌ Você precisa especificar o título do evento para apagar. Ex: `!apagar Reunião importante`');
             }
@@ -53,7 +53,7 @@ async function handleMessage(msg) {
             await msg.reply(`🗑️ Tentando apagar o próximo evento chamado "${tituloParaApagar}"...`);
 
             const response = await axios.delete(`${process.env.CALENDAR_URL}/apagar`, {
-                data: { titulo: tituloParaApagar }
+                data: { title: tituloParaApagar }
             });
 
             const { google, apple } = response.data;
