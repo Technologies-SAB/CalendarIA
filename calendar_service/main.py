@@ -56,12 +56,12 @@ async def listar_proximos_eventos():
     return eventos_unicos
 
 class EventoApagar(BaseModel):
-    titulo: str
+    title: str
 
 @app.delete("/apagar")
 async def apagar_evento(evento: EventoApagar):
-    resultado_google = apagar_evento_google(evento.titulo)
-    resultado_apple = apagar_evento_apple(evento.titulo)
+    resultado_google = apagar_evento_google(evento.title)
+    resultado_apple = apagar_evento_apple(evento.title)
 
     return {
         "google": resultado_google,
