@@ -107,3 +107,38 @@ def agendar_apple(data_str: str, hora_str: str, title: str, description: str):
     except Exception as e:
         logging.error(f"Erro ao agendar evento no iCloud via CalDAV: {e}", exc_info=True)
         return {"status": "error", "message": str(e)}
+    
+def listar_eventos_apple():
+
+    client = None
+    for server_url in ICLOUD_SERVERS:
+        try:
+            client = DAVClient(url=server_url, username=ICLOUD_USERNAME, password=ICLOUD_PASSWORD)
+            break
+        except Exception:
+            continue
+    if not client: return []
+
+    try:
+        principal = client.principal()
+        calendars = principal.calendars()
+        if not calendars: return []
+        
+        calendar = calendars[0]
+
+        start_date = datetime.datetime.now()
+        end_date = start_date + datetime.timedelta(days=7)
+
+        events_fetched = calendar.date_search(start=start_date, end=end_date, expand=True)
+        
+        lista_formatada = []
+        for event in events_fetched:
+            event_data = event.vobject_instance.vevent
+            titulo = event_data.summary.value
+            inicio = event_data.dtstart.value
+            lista_formatada.append({"inicio": inicio.isoformat(), "titulo": titulo})
+            
+        return lista_formatada
+    except Exception as e:
+        logging.error(f"Erro ao listar eventos do iCloud: {e}")
+        return []
