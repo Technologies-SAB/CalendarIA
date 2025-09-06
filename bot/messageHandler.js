@@ -5,13 +5,14 @@ async function handleMessage(msg) {
 
     if (text.toLowerCase() === '!ajuda'){
         msg.reply(
-            '🤖 *Comandos Disponiveis:*\n\n'+
-            '*1. Angendar um Evento:*\n' +
-            '`!agendar DD/MM/AAAA HH:MM Titulo do Evento`\n'+
-            '_Exemplo: !agendar 25/12/2025 20:00 Ceia de Natal_\n\n\n'+
-            '*2. Proximos eventos:*\n'+
-            '!proximos - Mostra os eventos dos proximos 7 dias a partir da data atual.'
-        );
+        '🤖 *Comandos Disponíveis:*\n\n'+
+        '*1. Agendar um Evento:*\n' +
+        '`!agendar DD/MM/AAAA HH:MM Título`\n\n\n' +
+        '*2. Listar Próximos Eventos:*\n' +
+        '`!proximos` (mostra os eventos dos próximos 7 dias)\n\n\n' +
+        '*3. Apagar um Evento:*\n' +
+        '`!apagar Título do Evento` (apaga o próximo evento com esse título)'
+    );
         return;
     }
 
@@ -39,6 +40,32 @@ async function handleMessage(msg) {
         } catch (error) {
             console.error('Erro ao buscar eventos:', error.response?.data || error.message);
             return msg.reply('❌ Ocorreu um erro ao buscar seus eventos.');
+        }
+    }
+
+    if (text.startsWith('!apagar ')) {
+        try {
+            const tituloParaApagar = texto.substring(8).trim();
+            if (!tituloParaApagar) {
+                return msg.reply('❌ Você precisa especificar o título do evento para apagar. Ex: `!apagar Reunião importante`');
+            }
+
+            await msg.reply(`🗑️ Tentando apagar o próximo evento chamado "${tituloParaApagar}"...`);
+
+            const response = await axios.delete(`${process.env.CALENDAR_URL}/apagar`, {
+                data: { titulo: tituloParaApagar }
+            });
+
+            const { google, apple } = response.data;
+            let resposta = "Resultado da operação:\n\n";
+            resposta += `*Google Calendar:* ${google.message}\n`;
+            resposta += `*iCloud Calendar:* ${apple.message}`;
+
+            return msg.reply(resposta);
+
+        } catch (error) {
+            console.error('Erro ao apagar evento:', error.response?.data || error.message);
+            return msg.reply('❌ Ocorreu um erro ao tentar apagar o evento.');
         }
     }
 
