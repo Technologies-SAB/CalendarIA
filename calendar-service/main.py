@@ -5,7 +5,7 @@ from google.google_calendar import agendar_google
 
 app = FastAPI(
     title="API CalendarIA",
-    description="Microserviço de integração de Calendários Appel e Google."
+    description="Microserviço de integração de Calendários Apple e Google."
 )
 
 class Evento(BaseModel):
@@ -24,5 +24,5 @@ async def agendar_evento(evento: Evento):
     return {
         "status": "sucesso",
         "google": resultado_google,
-        
+
     }

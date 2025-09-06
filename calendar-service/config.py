@@ -5,5 +5,7 @@ dotenv.load_dotenv()
 
 class Settings(BaseSettings):
     SCOPES: str
+    ICLOUD_USERNAME: str
+    ICLOUD_PASSWORD: str
 
 settings = Settings()
