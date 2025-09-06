@@ -113,7 +113,7 @@ def listar_eventos_apple():
     client = None
     for server_url in ICLOUD_SERVERS:
         try:
-            client = DAVClient(url=server_url, username=ICLOUD_USERNAME, password=ICLOUD_PASSWORD)
+            client = DAVClient(url=server_url, username=settings.ICLOUD_USERNAME, password=settings.ICLOUD_PASSWORD)
             break
         except Exception:
             continue
