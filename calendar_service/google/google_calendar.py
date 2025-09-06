@@ -109,6 +109,30 @@ def listar_eventos_google():
         logging.error(f"Erro ao listar eventos do Google: {e}")
         return []
     
+def apagar_evento_google(titulo):
+    service = get_calendar_service()
+    if not service:
+        return {"status": "error", "message": "Falha na conexão com o Google."}
+
+    try:
+        now = datetime.datetime.utcnow().isoformat() + "Z"
+        events_result = service.events().list(
+            calendarId='primary', q=titulo, timeMin=now, maxResults=1, singleEvents=True, orderBy='startTime'
+        ).execute()
+        
+        eventos = events_result.get('items', [])
+        if not eventos:
+            return {"status": "not_found", "message": f"Nenhum evento futuro com o título '{titulo}' encontrado no Google."}
+
+        event_id = eventos[0]['id']
+        service.events().delete(calendarId='primary', eventId=event_id).execute()
+        logging.info(f"Evento '{titulo}' apagado do Google Calendar.")
+        return {"status": "success", "message": f"Evento '{titulo}' apagado do Google Calendar."}
+    except Exception as e:
+        logging.error(f"Erro ao apagar evento do Google: {e}")
+        return {"status": "error", "message": str(e)}
+    
+    
 # if __name__ == "__main__":
 #     logging.info("Iniciando o processo de autenticação para gerar o token.json...")
 #     get_calendar_service()
