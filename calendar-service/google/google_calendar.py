@@ -36,7 +36,7 @@ def get_calendar_service():
         logging.error(f"Ocorreu um erro ao construir o serviço: {error}")
         return None
     
-def agendar_google(data_str: str, hora_str: str, titulo: str, description: str):
+def agendar_google(data_str: str, hora_str: str, title: str, description: str):
     service = get_calendar_service
 
     if not service:
@@ -51,7 +51,7 @@ def agendar_google(data_str: str, hora_str: str, titulo: str, description: str):
         end_time = start_time + datetime.timedelta(hours=2) # Padrão de 2 horas o evento.
 
         event = {
-            "summary": titulo,
+            "summary": title,
             "description": description + "\n Evento agendado via CalendarIA",
             "start": {
                 "dateTime": start_time.isoformat(),
