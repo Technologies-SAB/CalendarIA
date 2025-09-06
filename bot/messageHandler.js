@@ -9,13 +9,13 @@ async function handleMessage(msg) {
             '*1. Angendar um Evento:*\n' +
             '`!agendar DD/MM/AAAA HH:MM Titulo do Evento`\n'+
             '_Exemplo: !agendar 25/12/2025 20:00 Ceia de Natal_\n\n\n'+
-            '*1. Proximos eventos:*\n'+
+            '*2. Proximos eventos:*\n'+
             '!proximos - Mostra os eventos dos proximos 7 dias a partir da data atual.'
         );
         return;
     }
 
-    if (texto.toLowerCase() === '!proximos') {
+    if (text.toLowerCase() === '!proximos') {
         try {
             await msg.reply('🔎 Buscando seus próximos 7 dias de compromissos...');
             const response = await axios.get(`${process.env.CALENDAR_URL}/proximos`);
