@@ -22,7 +22,8 @@ def get_calendar_service():
         if creds and creds.expired and creds.refresh_token:
             creds.refresh(Request())
         else:
-            flow = InstalledAppFlow.from_client_secrets_file("credentials.json", settings.SCOPES)
+            cred_path = os.path.join(os.path.dirname(__file__), "..", "client_secret.json")
+            flow = InstalledAppFlow.from_client_secrets_file(cred_path, settings.SCOPES)
             creds = flow.run_local_server(port=0)
         
         with open("token.json", "w") as token:
@@ -37,14 +38,14 @@ def get_calendar_service():
         return None
     
 def agendar_google(data_str: str, hora_str: str, title: str, description: str):
-    service = get_calendar_service
+    service = get_calendar_service()
 
     if not service:
         return {"status": "error", "message": "Falha ao conectar com o Google Calendar."}
     
     try:
         dia, mes, ano = map(int, data_str.split('/'))
-        hora, minuto = map(int, hora_str(':'))
+        hora, minuto = map(int, hora_str.split(':'))
 
         start_time = datetime.datetime(ano, mes, dia, hora, minuto)
 
@@ -55,11 +56,11 @@ def agendar_google(data_str: str, hora_str: str, title: str, description: str):
             "description": description + "\n Evento agendado via CalendarIA",
             "start": {
                 "dateTime": start_time.isoformat(),
-                "timezone": "America/Sao_Paulo",
+                "timeZone": "America/Sao_Paulo",
             },
             "end": {
                 "dateTime": end_time.isoformat(),
-                "timezone": "America/Sao_Paulo",
+                "timeZone": "America/Sao_Paulo",
             },
         }
 
@@ -76,7 +77,7 @@ def agendar_google(data_str: str, hora_str: str, title: str, description: str):
         logging.error(f"Erro ao criar evento: {e}")
         return {"status": "error", "message": str(e)}
     
-# if __name__ == "__main__":
-#     logging.info("Iniciando o processo de autenticação para gerar o token.json...")
-#     get_calendar_service()
-#     logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")
+if __name__ == "__main__":
+    logging.info("Iniciando o processo de autenticação para gerar o token.json...")
+    get_calendar_service()
+    logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")

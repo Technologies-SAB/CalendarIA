@@ -10,15 +10,15 @@ app = FastAPI(
 )
 
 class Evento(BaseModel):
-    data: str
-    hora: str
+    date: str
+    hour: str
     title: str
     description: str
 
 @app.post("/agendar")
 async def agendar_evento(evento: Evento):
-    resultado_google = agendar_google(evento.data, evento.hora, evento.title, evento.description)
-    resultado_apple = agendar_apple(evento.data, evento.hora, evento.title, evento.description)
+    resultado_google = agendar_google(evento.date, evento.hour, evento.title, evento.description)
+    resultado_apple = agendar_apple(evento.date, evento.hour, evento.title, evento.description)
 
     if resultado_google["status"] == "error" and resultado_apple["status"] == "error":
         raise HTTPException(

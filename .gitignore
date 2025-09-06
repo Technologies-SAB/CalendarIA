@@ -1,4 +1,10 @@
 .env
 credentials.json
+client_secret.json
 token.json
 __pycache__
+.wwebjs_auth
+.wwebjs_cache
+node_modules
+__init__.py
+package-lock.json
