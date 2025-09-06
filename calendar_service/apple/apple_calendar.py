@@ -120,11 +120,25 @@ def listar_eventos_apple():
     if not client: return []
 
     try:
-        principal = client.principal()
-        calendars = principal.calendars()
-        if not calendars: return []
+        principal: Principal = client.principal()
         
-        calendar = calendars[0]
+        calendars: list[Calendar] = principal.calendars()
+
+        if not calendars:
+            return {"status": "error", "message": "Nenhum calendário encontrado na conta do iCloud."}
+        
+        target_calendar_name = "Pessoal"
+        calendar = None
+
+        for cal in calendars:
+            if cal.name.lower() == target_calendar_name.lower():
+                calendar = cal
+                logging.info(f"Calendário alvo '{target_calendar_name}' encontrado!")
+                break
+        
+        if not calendar:
+            calendar = calendars[0]
+            logging.warning(f"Calendário '{target_calendar_name}' não encontrado. Usando o calendário padrão: '{calendar.name}'")
 
         start_date = datetime.datetime.now()
         end_date = start_date + datetime.timedelta(days=7)
@@ -154,11 +168,26 @@ def apagar_evento_apple(titulo):
     if not client: return {"status": "error", "message": "Falha na conexão com o iCloud."}
 
     try:
-        principal = client.principal()
-        calendars = principal.calendars()
-        if not calendars: return {"status": "not_found", "message": "Nenhum calendário encontrado."}
+        principal: Principal = client.principal()
         
-        calendar = calendars[0]
+        calendars: list[Calendar] = principal.calendars()
+
+        if not calendars:
+            return {"status": "error", "message": "Nenhum calendário encontrado na conta do iCloud."}
+        
+        target_calendar_name = "Pessoal"
+        calendar = None
+
+        for cal in calendars:
+            if cal.name.lower() == target_calendar_name.lower():
+                calendar = cal
+                logging.info(f"Calendário alvo '{target_calendar_name}' encontrado!")
+                break
+        
+        if not calendar:
+            calendar = calendars[0]
+            logging.warning(f"Calendário '{target_calendar_name}' não encontrado. Usando o calendário padrão: '{calendar.name}'")
+            
         start_date = datetime.datetime.now()
         end_date = start_date + datetime.timedelta(days=365)
         
