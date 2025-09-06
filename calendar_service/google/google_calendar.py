@@ -77,7 +77,39 @@ def agendar_google(data_str: str, hora_str: str, title: str, description: str):
         logging.error(f"Erro ao criar evento: {e}")
         return {"status": "error", "message": str(e)}
     
-if __name__ == "__main__":
-    logging.info("Iniciando o processo de autenticação para gerar o token.json...")
-    get_calendar_service()
-    logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")
+def listar_eventos_google():
+    service = get_calendar_service()
+    if not service:
+        return []
+    
+    try:
+        now = datetime.datetime.utcnow().isoformat() + "Z"
+        future = (datetime.datetime.utcnow() + datetime.timedelta(days=7)).isoformat() + "Z"
+        
+        events_result = (
+            service.events()
+            .list(
+                calendarId="primary",
+                timeMin=now,
+                timeMax=future,
+                singleEvents=True,
+                orderBy="startTime",
+            )
+            .execute()
+        )
+        events = events_result.get("items", [])
+
+        lista_formatada = []
+        for event in events:
+            start = event["start"].get("dateTime", event["start"].get("date"))
+            lista_formatada.append({"inicio": start, "titulo": event["summary"]})
+        
+        return lista_formatada
+    except Exception as e:
+        logging.error(f"Erro ao listar eventos do Google: {e}")
+        return []
+    
+# if __name__ == "__main__":
+#     logging.info("Iniciando o processo de autenticação para gerar o token.json...")
+#     get_calendar_service()
+#     logging.info("Autenticação concluída. O arquivo token.json foi criado/atualizado.")
