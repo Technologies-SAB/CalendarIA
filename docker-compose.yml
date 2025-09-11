@@ -25,7 +25,7 @@ services:
 
   db:
     image: postgres:15-alpine
-    container_name: calendar_db
+    container_name: calendarIA_db
     environment:
       POSTGRES_USER: ${USERDB_CALENDARIA}
       POSTGRES_PASSWORD: ${PASSWORDDB_CALENDARIA}
