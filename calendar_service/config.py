@@ -4,7 +4,7 @@ import dotenv
 dotenv.load_dotenv()
 
 class Settings(BaseSettings):
-    SCOPES: str
+    SCOPES: list[str] = ["https://www.googleapis.com/auth/calendar"]
     ICLOUD_USERNAME: str
     ICLOUD_PASSWORD: str
 
