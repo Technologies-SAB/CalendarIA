@@ -2,22 +2,38 @@ from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel
 
 from datetime import datetime
-from google.google_calendar import agendar_google, listar_eventos_google, apagar_evento_google
-from apple.apple_calendar import agendar_apple, listar_eventos_apple, apagar_evento_apple
+from google.google_calendar import (
+    agendar_google, 
+    listar_eventos_google, 
+    apagar_evento_google, 
+    apagar_evento_google_por_busca
+)
+from apple.apple_calendar import (
+    agendar_apple, 
+    listar_eventos_apple, 
+    apagar_evento_apple, 
+    apagar_evento_apple_por_busca
+)
 
 app = FastAPI(
     title="API CalendarIA",
     description="Microserviço de integração de Calendários Apple e Google."
 )
 
-class Evento(BaseModel):
+class EventoAgendar(BaseModel):
     date: str
     hour: str
     title: str
     description: str
 
+class EventoApagar(BaseModel):
+    id: str
+    origem: str
+    titulo: str
+    inicio: str
+
 @app.post("/agendar")
-async def agendar_evento(evento: Evento):
+async def agendar_evento(evento: EventoAgendar):
     resultado_google = agendar_google(evento.date, evento.hour, evento.title, evento.description)
     resultado_apple = agendar_apple(evento.date, evento.hour, evento.title, evento.description)
 
@@ -55,15 +71,17 @@ async def listar_proximos_eventos():
     
     return eventos_unicos
 
-class EventoApagar(BaseModel):
-    title: str
-
 @app.delete("/apagar")
 async def apagar_evento(evento: EventoApagar):
-    resultado_google = apagar_evento_google(evento.title)
-    resultado_apple = apagar_evento_apple(evento.title)
+    resultado_google = {}
+    resultado_apple = {}
 
-    return {
-        "google": resultado_google,
-        "apple": resultado_apple
-    }
+    if evento.origem == "Google":
+        resultado_google = apagar_evento_google(evento.id)
+        resultado_apple = apagar_evento_apple_por_busca(evento.titulo, evento.inicio)
+    
+    elif evento.origem == "iCloud":
+        resultado_apple = apagar_evento_apple(evento.id)
+        resultado_google = apagar_evento_google_por_busca(evento.titulo, evento.inicio)
+
+    return {"google": resultado_google, "apple": resultado_apple}
