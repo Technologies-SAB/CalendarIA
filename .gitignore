@@ -1,10 +1,19 @@
-.env
-credentials.json
-client_secret.json
-token.json
-__pycache__
-.wwebjs_auth
-.wwebjs_cache
-node_modules
-__init__.py
+# Arquivos de ambiente
+bot/.env
+calendar_service/.env
+
+# Credenciais e tokens locais
+calendar_service/credentials.json
+calendar_service/token.json
+calendar_service/test_icloud.py
+
+# Pastas de dependências e cache
+node_modules/
+bot/node_modules/
+__pycache__/
+.venv/
 package-lock.json
+
+# Arquivos de sessão do whatsapp-web.js
+bot/.wwebjs_auth/
+bot/.wwebjs_cache/
