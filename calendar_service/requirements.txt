@@ -1,11 +1,22 @@
 fastapi
 uvicorn
+python-dotenv
+pydantic-settings
+
+# Banco de Dados
+sqlalchemy
+psycopg2-binary
+alembic
+
+# Criptografia para tokens
+cryptography
+
+# Provedores de Calendário
 google-api-python-client
 google-auth-httplib2
 google-auth-oauthlib
-pydantic-settings
-dotenv
 caldav
 icalendar
 pytz
 vobject
+o365
