@@ -1,0 +1,6 @@
+@CalendarService.DotNet_HostAddress = http://localhost:5275
+
+GET {{CalendarService.DotNet_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
