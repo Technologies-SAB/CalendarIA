@@ -1,7 +1,7 @@
 {
     "name": "calendaria",
-    "version": "1.0.0",
-    "description": "Bot de agendamento via WhatsApp",
+    "version": "1.0.3",
+    "description": "Agendamento via WhatsApp",
     "main": "index.js",
     "scripts": {
         "start": "node index.js"
