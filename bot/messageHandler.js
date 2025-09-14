@@ -29,22 +29,41 @@ async function handleMessage(msg) {
             break;
         
         case '!conectar':
-            const provider = texto.split(' ')[1];
-            const baseUrl = process.env.API_BASE_URL || 'http://localhost:8000';
-            let authUrl;
+            try {
+                const provider = commandParts[1]?.toLowerCase();
+                const baseUrl = process.env.API_BASE_URL || 'http://localhost:8000';
+                
+                if (provider === 'google') {
+                    const authUrl = `${baseUrl}/auth/google/login?chat_id=${userChatId}`;
+                    await msg.reply(`Clique no link para conectar seu Google Calendar:\n\n${authUrl}`);
+                } else if (provider === 'outlook') {
+                    const authUrl = `${baseUrl}/outlook/start-auth?chat_id=${userChatId}`;
+                    await msg.reply(`Clique no link para conectar seu Outlook:\n\n${authUrl}`);
+                } else if (provider === 'apple') {
+                    const username = commandParts[2];
+                    const password = commandParts[3];
 
-            if (provider === 'google') {
-                authUrl = `${baseUrl}/auth/google/login?chat_id=${userChatId}`;
-                await msg.reply(`Clique no link para conectar seu Google Calendar:\n\n${authUrl}`);
-            } else if (provider === 'outlook') {
-                authUrl = `${baseUrl}/outlook/start-auth?chat_id=${userChatId}`;
-                await msg.reply(`Clique no link para conectar seu Outlook:\n\n${authUrl}`);
-            } else if (provider === 'apple') {
-                await msg.reply('Para conectar sua conta Apple (iCloud), preciso do seu email e de uma senha específica de aplicativo.\n\n' +
-                                'Use o comando no seguinte formato:\n`!conectar apple seu-email@icloud.com sua-senha-de-app`\n\n' +
-                                '⚠️ *Atenção:* Use uma senha gerada em appleid.apple.com, nunca sua senha principal.');
-            } else {
-                await msg.reply('Provedor desconhecido. Use `!conectar <google|outlook|apple>`.');
+                    if (!username || !password) {
+                        return msg.reply('Formato incorreto. Use:\n`!conectar apple seu-email@icloud.com sua-senha-de-app`');
+                    }
+                    
+                    await msg.reply('🔒 Verificando suas credenciais do iCloud e conectando... Isso pode levar um momento.');
+
+                    const response = await axios.post(`${process.env.CALENDAR_URL}/connect/apple`, {
+                        chat_id: userChatId,
+                        username: username,
+                        password: password
+                    });
+
+                    await msg.reply(`✅ ${response.data.message}`);
+
+                } else {
+
+                    await msg.reply('Provedor desconhecido. Use `!conectar <google|outlook|apple>`.');
+
+                }
+            } catch (error) {
+                await msg.reply(`❌ Erro ao conectar: ${error.response?.data?.detail || error.message}`);
             }
             break;
 
