@@ -2,11 +2,11 @@ import json
 from google_auth_oauthlib.flow import Flow
 from google.oauth2.credentials import Credentials
 from googleapiclient.discovery import build
-from googleapiclient.errors import HttpError
 from config import settings
 from security import decrypt_data
-
-# --- Funções de Autenticação e Callback ---
+import models
+import crud   
+from sqlalchemy.orm import Session 
 
 def get_google_auth_flow() -> Flow:
     """
@@ -48,26 +48,31 @@ def process_google_callback(authorization_response: str) -> dict:
     }
     return credentials
 
-# --- Função para Criar um Cliente de Serviço Autenticado ---
 
-def get_google_service(encrypted_credentials: str):
-    """
-    Recebe as credenciais criptografadas do banco de dados,
-    descriptografa, cria um objeto de credenciais do Google,
-    e retorna um objeto de serviço ('service') pronto para uso.
+def get_google_service(account_from_db: models.ConnectedAccount, db: Session):
 
-    :param encrypted_credentials: A string de credenciais criptografada vinda do DB.
-    :return: Um objeto de serviço do Google Calendar API, ou None em caso de erro.
-    """
     try:
-        creds_json = decrypt_data(encrypted_credentials)
+        creds_json = decrypt_data(account_from_db.encrypted_credentials)
         creds_dict = json.loads(creds_json)
         
         credentials = Credentials.from_authorized_user_info(creds_dict, settings.SCOPES)
 
         if credentials.expired and credentials.refresh_token:
             from google.auth.transport.requests import Request
+            print("Token do Google expirado, tentando renovar...")
             credentials.refresh(Request())
+
+            new_creds_to_save = {
+                'token': credentials.token,
+                'refresh_token': credentials.refresh_token,
+                'token_uri': credentials.token_uri,
+                'client_id': credentials.client_id,
+                'client_secret': credentials.client_secret,
+                'scopes': credentials.scopes
+            }
+
+            crud.update_account_credentials(db, account=account_from_db, new_credentials=new_creds_to_save)
+            print("Token do Google renovado e salvo no banco de dados.")
 
         service = build("calendar", "v3", credentials=credentials)
         return service

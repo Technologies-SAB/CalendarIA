@@ -1,25 +1,21 @@
-from O365 import Account
+import msal
 from config import settings
 
-SCOPES = ['Calendars.ReadWrite']
+DOTNET_API_SCOPES = [f"api://{settings.OUTLOOK_CLIENT_ID}/.default"]
 
-temp_auth_flow_storage = {}
-
-def get_outlook_account_object():
-    credentials = (settings.OUTLOOK_CLIENT_ID, settings.OUTLOOK_CLIENT_SECRET)
-    if not all(credentials):
-        raise ValueError("Credenciais do Outlook não definidas no ambiente.")
-    return Account(credentials)
-
-def get_outlook_auth_url_and_flow(chat_id: str) -> str:
-    account = get_outlook_account_object()
+def get_dotnet_api_token() -> str:
+    authority = f"https://login.microsoftonline.com/{settings.AZURE_TENANT_ID}"
     
-    flow = account.con.msal_client.initiate_auth_code_flow(
-        scopes=SCOPES,
-        redirect_uri=settings.OUTLOOK_REDIRECT_URI,
-        prompt='consent'
+    msal_client = msal.ConfidentialClientApplication(
+        client_id=settings.OUTLOOK_CLIENT_ID,
+        client_credential=settings.OUTLOOK_CLIENT_SECRET,
+        authority=authority
     )
-
-    temp_auth_flow_storage[chat_id] = flow
     
-    return flow['auth_uri']
+    result = msal_client.acquire_token_for_client(scopes=DOTNET_API_SCOPES)
+    
+    if "access_token" not in result:
+        error_details = result.get('error_description', 'Nenhum detalhe de erro retornado.')
+        raise Exception(f"Não foi possível autenticar o serviço Python com a API .NET: {error_details}")
+    
+    return result['access_token']
