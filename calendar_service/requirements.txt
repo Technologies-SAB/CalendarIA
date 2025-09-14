@@ -20,3 +20,4 @@ icalendar
 pytz
 vobject
 o365
+itsdangerous

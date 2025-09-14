@@ -16,7 +16,8 @@ def get_outlook_auth_url_and_flow(chat_id: str) -> str:
     
     flow = account.con.msal_client.initiate_auth_code_flow(
         scopes=SCOPES,
-        redirect_uri=settings.OUTLOOK_REDIRECT_URI
+        redirect_uri=settings.OUTLOOK_REDIRECT_URI,
+        prompt='consent'
     )
 
     temp_auth_flow_storage[chat_id] = flow

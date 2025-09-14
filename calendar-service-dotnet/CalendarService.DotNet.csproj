@@ -14,7 +14,9 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Graph" Version="5.92.0" />
     <PackageReference Include="Microsoft.Identity.Web" Version="3.14.1" />
+    <PackageReference Include="Microsoft.Identity.Web.MicrosoftGraph" Version="3.14.1" />
     <PackageReference Include="Npgsql.EntityFrameworkCore.PostgreSQL" Version="9.0.4" />
+    <PackageReference Include="Swashbuckle.AspNetCore" Version="9.0.4" />
   </ItemGroup>
 
 </Project>
